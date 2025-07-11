@@ -3,6 +3,7 @@ package org.training.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,21 @@ public class BookController {
 
         return bookRepository.save(existingBook);
 
+    }
+
+    @DeleteMapping(value = "/deleteBook")
+    public String deleteBook(@RequestBody Book book) throws Exception {
+        log.info("deleteBook Executing");
+        if (book == null) {
+            throw new Exception("Book Record must not be null");
+        }
+        Optional<Book> optionalBook = bookRepository.findById(book.getBookId());
+        if(!optionalBook.isPresent()){
+            throw new Exception("Book with ID: " + book.getBookId() + " does not exists");
+        }
+        Book existingBook = optionalBook.get();
+        bookRepository.delete(existingBook);
+        return "Successfully Deleted Book : " + book.getBookId();
     }
 
 }
